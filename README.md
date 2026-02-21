@@ -5,12 +5,12 @@
 ## Features
 
 - **Seamless Integration:** Automatically attaches to the Auction House window when you visit an auctioneer and closes together with the Auction House.
-- **Freely Positionable:** The window can be detached from the Auction House via an "Unlock" icon and moved freely around the screen.
+- **Freely Positionable & Resizable:** The window can be detached from the Auction House via an "Unlock" icon, moved freely around the screen, and resized to fit your needs.
 - **Quick Search (1-Click):** A simple `CTRL + Left Click` on an item in your list inserts it directly into the Auction House search field and immediately starts the search.
 - **Inventory Integration:** `CTRL + Left Click` on an item in your bags conveniently adds it directly to your budsAuction list.
 - **Autocomplete:** When typing an item name into the budsAuction search field, the addon scans your inventory and automatically suggests matching items.
 - **Account-wide Storage:** Your personal item list is saved across sessions and account-wide.
-- **Performance Protection:** The list is limited to 35 items by default (adjustable in the standard WoW options) to preserve client performance.
+- **Customizable:** Adjust the item limit to preserve client performance, and customize the font size in the standard WoW Interface Options (`/budsauction` or `/ba`).
 
 ## Installation
 
@@ -28,7 +28,7 @@
    - Type a name into the input field (with autocomplete from your bags) and click Save.
    - *Or:* Use `CTRL + Left Click` on an item in your backpack while the Auction House is open.
 4. **Search Items:** Use `CTRL + Left Click` on an entry in your budsAuction list to have the normal Auction House search for it.
-5. You can adjust the item limit in the Interface Options (`/budsauction` or `/ba`).
+5. You can adjust the item limit and font size in the Interface Options (`/budsauction`, `/ba`, or via the gear icon on the addon).
 
 ## Chat Commands (Slash Commands)
 
