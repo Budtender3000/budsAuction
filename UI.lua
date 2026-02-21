@@ -1,8 +1,6 @@
 -- budsAuction (WotLK 3.3.5a)
 -- UI.lua: Frame rendering, autocomplete, list rendering
 
-local addonName, addonTable = ...
-
 function budsAuction:SetupAuctionUIIntegration()
     print("|cFF00FF00budsAuction|r: Attached to Blizzard_AuctionUI.")
     
@@ -229,6 +227,8 @@ function budsAuction:CreateMainUI()
 end
 
 function budsAuction:RefreshList()
+    if not self.listFrames then return end
+
     -- Hide old frames
     for _, row in ipairs(self.listFrames) do
         row:Hide()
@@ -305,7 +305,7 @@ function budsAuction:RefreshList()
         end)
         
         -- Try to fetch icon
-        local itemNameInfo, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = GetItemInfo(itemName)
+        local itemTexture = select(10, GetItemInfo(itemName))
         if itemTexture then
             row.icon:SetTexture(itemTexture)
         else

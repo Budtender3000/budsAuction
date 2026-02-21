@@ -1,8 +1,6 @@
 -- budsAuction (WotLK 3.3.5a)
 -- Core.lua: Initialization, DB management, and Events
 
-local addonName, addonTable = ...
-
 -- Global ref
 if not budsAuction then
     budsAuction = CreateFrame("Frame", "budsAuctionEventFrame", UIParent)
@@ -24,7 +22,11 @@ function budsAuction:Initialize()
     -- Ensure backwards compatibility if adding new settings
     for k, v in pairs(defaultSettings) do
         if budsAuctionDB[k] == nil then
-            budsAuctionDB[k] = v
+            if type(v) == "table" then
+                budsAuctionDB[k] = CopyTable(v)
+            else
+                budsAuctionDB[k] = v
+            end
         end
     end
 

@@ -1,8 +1,6 @@
 -- budsAuction (WotLK 3.3.5a)
 -- Options.lua: Interface options and slash cmds
 
-local addonName, addonTable = ...
-
 function budsAuction:CreateOptionsPanel()
     local panel = CreateFrame("Frame", "budsAuctionOptionsPanel", UIParent)
     panel.name = "budsAuction"
