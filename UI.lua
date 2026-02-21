@@ -16,7 +16,7 @@ end
 function budsAuction:CreateMainUI()
     -- Create Main Frame
     local frame = CreateFrame("Frame", "budsAuctionMainFrame", AuctionFrame)
-    frame:SetSize(250, 428) -- Width reasonable for a list, height matching WoW Classic AH roughly
+    frame:SetSize(325, 428) -- Width reasonable for a list, height matching WoW Classic AH roughly
     frame:SetPoint("TOPLEFT", AuctionFrame, "TOPRIGHT", -2, -12)
     
     -- Basic 3.3.5a Backdrop (Dark/Translucent flat style like KkthnxUI/budsUI)
@@ -29,7 +29,11 @@ function budsAuction:CreateMainUI()
     frame:SetBackdropColor(0.05, 0.05, 0.05, 0.9)
     frame:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
 
-    -- Make it optionally draggable
+    -- Make it optionally draggable and resizable
+    if frame.SetResizable then frame:SetResizable(true) end
+    frame:SetMinResize(325, 250)
+    frame:SetMaxResize(600, 800)
+    
     frame:SetMovable(true)
     frame:EnableMouse(true)
     frame:RegisterForDrag("LeftButton")
@@ -41,6 +45,27 @@ function budsAuction:CreateMainUI()
     frame:SetScript("OnDragStop", function(self)
         self:StopMovingOrSizing()
     end)
+
+    -- Resize Handle
+    local resizeBtn = CreateFrame("Button", nil, frame)
+    resizeBtn:SetSize(16, 16)
+    resizeBtn:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -2, 2)
+    resizeBtn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
+    resizeBtn:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
+    resizeBtn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
+    resizeBtn:SetScript("OnMouseDown", function(self, button)
+        if button == "LeftButton" and budsAuctionDB.unlocked then
+            frame:StartSizing("BOTTOMRIGHT")
+            self:GetHighlightTexture():Hide()
+        end
+    end)
+    resizeBtn:SetScript("OnMouseUp", function(self, button)
+        if button == "LeftButton" then
+            frame:StopMovingOrSizing()
+            self:GetHighlightTexture():Show()
+        end
+    end)
+    frame.resizeBtn = resizeBtn
 
     -- Title Text
     local title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -54,25 +79,45 @@ function budsAuction:CreateMainUI()
         frame:Hide()
     end)
 
+    -- Options Button
+    local optBtn = CreateFrame("Button", nil, frame)
+    optBtn:SetSize(16, 16)
+    optBtn:SetPoint("RIGHT", closeBtn, "LEFT", 8, 0)
+    optBtn:SetNormalTexture("Interface\\Buttons\\UI-OptionsButton")
+    optBtn:SetHighlightTexture("Interface\\Buttons\\UI-OptionsButton-Highlight", "ADD")
+    optBtn:SetScript("OnClick", function()
+        if budsAuction and budsAuction.optionsPanel then
+            InterfaceOptionsFrame_OpenToCategory(budsAuction.optionsPanel)
+            InterfaceOptionsFrame_OpenToCategory(budsAuction.optionsPanel)
+        end
+    end)
+
     -- Unlock Button (Toggle Dragging)
     local unlockBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
     unlockBtn:SetSize(60, 20)
     unlockBtn:SetPoint("TOPLEFT", frame, "TOPLEFT", 10, -5)
-    unlockBtn:SetText("Unlock")
+    unlockBtn:SetText(budsAuctionDB.unlocked and "Lock" or "Unlock")
     unlockBtn:SetScript("OnClick", function(self)
         budsAuctionDB.unlocked = not budsAuctionDB.unlocked
         if budsAuctionDB.unlocked then
             self:SetText("Lock")
-            print("|cFF00FF00budsAuction|r: Frame is now draggable.")
+            print("|cFF00FF00budsAuction|r: Frame is now draggable and resizable.")
+            if frame.resizeBtn then frame.resizeBtn:Show() end
         else
             self:SetText("Unlock")
             print("|cFF00FF00budsAuction|r: Frame is now locked.")
+            if frame.resizeBtn then frame.resizeBtn:Hide() end
             -- unlock text reset
             -- Re-anchor
             frame:ClearAllPoints()
             frame:SetPoint("TOPLEFT", AuctionFrame, "TOPRIGHT", -2, -12)
         end
     end)
+
+    -- Apply initial locked/unlocked state for resizeBtn
+    if not budsAuctionDB.unlocked then
+        frame.resizeBtn:Hide()
+    end
 
     -- Item Input EditBox
     local editBox = CreateFrame("EditBox", "budsAuctionInput", frame, "InputBoxTemplate")
@@ -100,7 +145,7 @@ function budsAuction:CreateMainUI()
 
     -- Auto-complete dropdown container
     local acFrame = CreateFrame("Frame", "budsAuctionAutoComplete", editBox, "UIDropDownMenuTemplate")
-    acFrame:SetPoint("TOPLEFT", editBox, "BOTTOMLEFT", -15, 0)
+    acFrame:Hide() -- Hide template visuals so it doesn't overlap the list
     
     local function GetBagItemsMatching(matchStr)
         local results = {}
@@ -162,6 +207,10 @@ function budsAuction:CreateMainUI()
     scrollFrame:SetScrollChild(scrollChild)
     self.scrollChild = scrollChild
 
+    scrollFrame:SetScript("OnSizeChanged", function(self, width, height)
+        scrollChild:SetWidth(width)
+    end)
+
     -- Table to hold the row frames
     self.listFrames = {}
 
@@ -185,7 +234,7 @@ function budsAuction:RefreshList()
         row:Hide()
     end
     
-    local rowHeight = 24
+    local rowHeight = (budsAuctionDB.fontSize or 12) + 12
     local numItems = #budsAuctionDB.items
     if not self.scrollChild then return end -- Guard
     self.scrollChild:SetHeight(math.max(10, numItems * rowHeight))
@@ -195,7 +244,6 @@ function budsAuction:RefreshList()
         
         if not row then
             row = CreateFrame("Button", nil, self.scrollChild)
-            row:SetSize(200, rowHeight)
             
             -- Delete Button (Right)
             local delBtn = CreateFrame("Button", nil, row)
@@ -265,7 +313,13 @@ function budsAuction:RefreshList()
             row.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
         end
         
+        local font, _, flags = row.nameText:GetFont()
+        row.nameText:SetFont(font, budsAuctionDB.fontSize or 12, flags)
+        
+        row:SetHeight(rowHeight)
+        row:ClearAllPoints()
         row:SetPoint("TOPLEFT", self.scrollChild, "TOPLEFT", 0, -(i-1)*rowHeight)
+        row:SetPoint("TOPRIGHT", self.scrollChild, "TOPRIGHT", 0, -(i-1)*rowHeight)
         row:Show()
     end
 end

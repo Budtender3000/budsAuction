@@ -10,6 +10,8 @@ end
 
 local defaultSettings = {
     listLimit = 35,
+    fontSize = 12,
+    unlocked = false,
     items = {} -- Array of item names for the quick-access list
 }
 

@@ -15,7 +15,6 @@ function budsAuction:CreateOptionsPanel()
     limitSlider:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -30)
     limitSlider:SetMinMaxValues(10, 100)
     limitSlider:SetValueStep(1)
-    limitSlider:SetObeyStepOnDrag(true)
     limitSlider:SetValue(budsAuctionDB.listLimit)
     
     _G[limitSlider:GetName() .. "Low"]:SetText("10")
@@ -27,11 +26,31 @@ function budsAuction:CreateOptionsPanel()
         budsAuctionDB.listLimit = val
         _G[self:GetName() .. "Text"]:SetText("List Limit: " .. val)
     end)
+
+    local fontSlider = CreateFrame("Slider", "budsAuctionFontSlider", panel, "OptionsSliderTemplate")
+    fontSlider:SetPoint("TOPLEFT", limitSlider, "BOTTOMLEFT", 0, -40)
+    fontSlider:SetMinMaxValues(8, 24)
+    fontSlider:SetValueStep(1)
+    fontSlider:SetValue(budsAuctionDB.fontSize or 12)
+    
+    _G[fontSlider:GetName() .. "Low"]:SetText("8")
+    _G[fontSlider:GetName() .. "High"]:SetText("24")
+    _G[fontSlider:GetName() .. "Text"]:SetText("Font Size: " .. (budsAuctionDB.fontSize or 12))
+    
+    fontSlider:SetScript("OnValueChanged", function(self, value)
+        local val = math.floor(value + 0.5)
+        if val == budsAuctionDB.fontSize then return end
+        budsAuctionDB.fontSize = val
+        _G[self:GetName() .. "Text"]:SetText("Font Size: " .. val)
+        if budsAuction and budsAuction.RefreshList then
+            budsAuction:RefreshList()
+        end
+    end)
     
     -- Optional Reload Button to apply constraints immediately 
     local reloadBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     reloadBtn:SetSize(120, 25)
-    reloadBtn:SetPoint("TOPLEFT", limitSlider, "BOTTOMLEFT", 0, -30)
+    reloadBtn:SetPoint("TOPLEFT", fontSlider, "BOTTOMLEFT", 0, -30)
     reloadBtn:SetText("Reload UI")
     reloadBtn:SetScript("OnClick", function() ReloadUI() end)
     
