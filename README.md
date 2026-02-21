@@ -1,5 +1,7 @@
 # budsAuction
 
+![budsAuction](budsauction.jpg)
+
 **budsAuction** is a World of Warcraft (Patch 3.3.5a) addon for private servers (specifically [Ascension.gg](https://ascension.gg/)). It's a lightweight "Quick-Access" list addon that seamlessly attaches to the standard Blizzard Auction House, giving you fast access to your most frequently searched items.
 
 ## Features
