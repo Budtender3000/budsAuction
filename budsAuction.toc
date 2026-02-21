@@ -1,0 +1,11 @@
+## Interface: 30300
+## Title: budsAuction
+## Notes: Quick-Access AH List Addon for Budtender Universe
+## Author: Budtender3000
+## Version: 0.1.0-alpha
+## SavedVariables: budsAuctionDB
+
+Core.lua
+UI.lua
+Hooks.lua
+Options.lua
