@@ -1,7 +1,7 @@
 # budsAuction
 
 <p align="center">
-  <img src="assets/budsauction_logo.png" alt="budsAuction Logo" width="400"/>
+  <img src="assets/budsauction_logo.png" alt="budsAuction Logo" width="800"/>
 </p>
 
 ![budsAuction GUI](assets/budsauction_gui.jpg)
